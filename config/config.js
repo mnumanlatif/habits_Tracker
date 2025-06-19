@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config(); 
+
 const env = process.env.NODE_ENV || 'development';
 
 const isUsingLocalDb = process.env.USE_LOCAL_DB === 'true';
@@ -27,5 +30,8 @@ const config = {
 
 config[env].isDev = env === 'development';
 config[env].isProd = env === 'production';
+console.log('[DEBUG] USE_LOCAL_DB:', process.env.USE_LOCAL_DB);
+console.log('[DEBUG] DB_LOCAL_URL:', process.env.DB_LOCAL_URL);
 
-module.exports = config[env];
+
+export default config[env];

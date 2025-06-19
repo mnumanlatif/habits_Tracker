@@ -1,7 +1,7 @@
-const Habit = require('../models/habitModel');
+import Habit from '../models/habitModel.js';
 
 // Get all habits
-exports.getHabits = async (req, res) => {
+const getHabits = async (req, res) => {
   try {
     const habits = await Habit.find();
     res.json(habits);
@@ -12,20 +12,36 @@ exports.getHabits = async (req, res) => {
 };
 
 // Create a new habit
-exports.createHabit = async (req, res) => {
-  const { id, name, frequency } = req.body;
+const createHabit = async (req, res) => {
+  const {
+    userId,
+    name,
+    frequency,
+    description,
+    priority,
+    category,
+  } = req.body;
 
-  if (!id || !name || !frequency) {
-    return res.status(400).json({ error: 'All fields are required' });
+  if (!userId) {
+    return res.status(400).json({ error: 'USER ID NOT FOUND' });
   }
 
   try {
-    const existing = await Habit.findOne({ id });
-    if (existing) {
-      return res.status(409).json({ error: 'Habit with this ID already exists' });
+    // Check if a habit already exists for this user
+    const existingHabit = await Habit.findOne({ userId });
+    if (existingHabit) {
+      return res.status(409).json({ error: 'Habit already exists for this user' });
     }
 
-    const habit = new Habit({ id, name, frequency });
+    const habit = new Habit({
+      userId,
+      name,
+      frequency,
+      description,
+      priority,
+      category,
+    });
+
     await habit.save();
     res.status(201).json({ message: 'Habit created', habit });
   } catch (err) {
@@ -34,18 +50,31 @@ exports.createHabit = async (req, res) => {
   }
 };
 
-// Update a habit
-exports.updateHabit = async (req, res) => {
-  // const { id } = req.params;
-  const { name, frequency } = req.body;
 
-  if (!name || !frequency) {
-    return res.status(400).json({ error: 'Name and frequency are required' });
-  }
+// Update a habit
+const updateHabit = async (req, res) => {
+  const { id } = req.params;
+  const {
+    name,
+    frequency,
+    description,
+    priority,
+    category,
+    isArchived,
+  } = req.body;
 
   try {
-    const habit = await Habit.findOneAndUpdate(
-      { name, frequency },
+    const habit = await Habit.findByIdAndUpdate(
+      id,
+      {
+        name,
+        frequency,
+        description,
+        priority,
+        category,
+        isArchived,
+        updatedAt: new Date(),
+      },
       { new: true }
     );
 
@@ -58,4 +87,10 @@ exports.updateHabit = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Database error' });
   }
+};
+
+export default {
+  getHabits,
+  createHabit,
+  updateHabit,
 };

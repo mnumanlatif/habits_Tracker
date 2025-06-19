@@ -1,10 +1,7 @@
-/* eslint-disable global-require, func-names */
+import habitController from '../app/controllers/habitController.js';
 
-module.exports = function (app) {
-  // home
-  const habitController = require('../app/controllers/habitController');
-
-app.get('/', habitController.getHabits);
-app.post('/', habitController.createHabit);
-app.put('/:id', habitController.updateHabit);
-};
+export default function(app) {
+  app.get('/habbit', habitController.getHabits);
+  app.post('/habbit/create', habitController.createHabit);
+  app.put('/habbit/:id', habitController.updateHabit);
+}

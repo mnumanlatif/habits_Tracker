@@ -1,12 +1,17 @@
-const Mongoose = require('mongoose');
-const debug = require('debug')('myapp:db');
-const config = require('./config');
+import mongoose from 'mongoose';
+import debugLib from 'debug';
+import config from './config.js';
+
+const debug = debugLib('myapp:db');
 
 // Use native ES6 promises
-Mongoose.Promise = global.Promise;
-Mongoose.connect(config.database.url, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.Promise = global.Promise;
+mongoose.connect(config.database.url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
-const db = Mongoose.connection;
+const db = mongoose.connection;
 
 db.on('error', () => {
   debug(`MongoDB connection error ${config.database.url} \nPlease make sure MongoDB is running.`);
@@ -16,7 +21,6 @@ db.on('error', () => {
 db.once('open', () => {
   debug('MongoDB connection with database succeeded.');
   console.log('MongoDB Connected');
-  
 });
 
 process.on('SIGINT', () => {
@@ -26,4 +30,4 @@ process.on('SIGINT', () => {
   });
 });
 
-module.exports = db;
+export default db;
