@@ -24,25 +24,21 @@ const createHabit = asyncHandler(async (req, res) => {
   res.status(201).json({ message: 'Habit created', habit });
 });
 
-// Update a habit
+// Update a habit (compatible with SQLite)
 const updateHabit = asyncHandler(async (req, res) => {
   const value = handleValidation(req.body, updateHabitValidationSchema, res);
   const { id } = req.params;
 
-  const [updatedCount, updatedHabits] = await Habit.update(
+  const [updatedCount] = await Habit.update(
     { ...value, updatedAt: new Date() },
-    {
-      where: { id },
-      returning: true, // for Postgres only
-    }
+    { where: { id } }
   );
 
-  const updatedHabit = updatedHabits?.[0];
-
-  if (!updatedCount || !updatedHabit) {
+  if (!updatedCount) {
     return res.status(404).json({ error: 'Habit not found' });
   }
 
+  const updatedHabit = await Habit.findByPk(id);
   res.status(200).json({ message: 'Habit updated', habit: updatedHabit });
 });
 

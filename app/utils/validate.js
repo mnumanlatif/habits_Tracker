@@ -1,8 +1,10 @@
-export const handleValidation = (data, schema, res) => {
+export const handleValidation = (data, schema) => {
   const { error, value } = schema.validate(data);
   if (error) {
-    res.status(400).json({ error: error.details[0].message });
-    throw new Error(error.details[0].message); // stop execution
+    const message = error.details[0].message;
+    const err = new Error(message);
+    err.status = 400; // Optional: use for custom error codes
+    throw err; // Let asyncHandler or middleware handle it
   }
   return value;
 };

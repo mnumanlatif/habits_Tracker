@@ -3,15 +3,13 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js'; // Make sure your DB connection is initialized here
 
 const Habit = sequelize.define('Habit', {
-  userId: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-    references: {
-      model: 'Users', // table name (ensure you define this User model separately)
-      key: 'id',
-    },
-  },
+ userId: {
+  type: DataTypes.STRING,
+  allowNull: false,
+  unique: true,
+  // ❌ remove `references` block for now
+},
+
   name: {
     type: DataTypes.STRING,
     allowNull: false,

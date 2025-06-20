@@ -40,7 +40,7 @@ app.use(expressWinston.logger({
   colorize: false,
 }));
 
-// view engine setup
+// 🟡 View engine setup (commented for API-only use)
 // app.set('views', path.join(__dirname, 'app/views'));
 // app.set('view engine', 'pug');
 
@@ -57,7 +57,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 import apiRoutes from './routes/api.js';
 apiRoutes(app);
 
-// catch 404 and forward to error handler
+// ✅ Catch 404 and forward to error handler
 app.use((req, res, next) => {
   const err = new Error('Not Found');
   err.status = 404;
@@ -69,24 +69,34 @@ app.use(expressWinston.errorLogger({
   winstonInstance: customLogger,
 }));
 
-// error handler
+// 🛠️ Error handler (API-safe, JSON response instead of render)
 app.use((err, req, res, next) => {
-  res.locals.message = err.message;
-  res.locals.error = config.isDev ? err : {};
-  res.status(err.status || 500);
-  res.render('error');
+  // 🟡 Previously used for templating (commented out)
+  // res.locals.message = err.message;
+  // res.locals.error = config.isDev ? err : {};
+  // res.status(err.status || 500);
+  // res.render('error');
+
+  // ✅ JSON API-safe error response
+  console.error('💥 Error:', err.message);
+  res.status(err.status || 500).json({
+    error: err.message || 'Internal Server Error',
+    ...(config.isDev && { stack: err.stack }),
+  });
 });
 
+// ✅ Initialize Sequelize and start the server
 try {
   await sequelize.authenticate();
-  console.log('Database connected!');
+  console.log('✅ Database connected!');
 
-  // now start the server
-  app.listen(3000, () => {
-    console.log('Server running on port 3000');
+  await sequelize.sync({ alter: true });
+
+  app.listen(config.server.port, () => {
+    console.log(`🚀 Server running at http://${config.server.hostname}:${config.server.port}`);
   });
 } catch (error) {
-  console.error('Unable to connect to the database:', error);
+  console.error('❌ Unable to connect to the database:', error);
   process.exit(1);
 }
 
