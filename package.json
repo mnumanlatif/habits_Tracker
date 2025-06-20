@@ -1,0 +1,59 @@
+{
+  "name": "express-mvc-boilerplate",
+  "version": "1.0.0",
+  "description": "A simple mvc boilerplate for express.js",
+  "private": true,
+  "main": "app.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "mocha -R spec ./test/*.js",
+    "lint": "eslint ./ || exit 0",
+    "lint-fix": "eslint ./ --fix || exit 0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "debug": "^3.2.6",
+    "dotenv": "^8.6.0",
+    "express": "^4.21.2",
+    "express-winston": "^4.2.0",
+    "joi": "^17.13.3",
+    "mongodb": "^6.17.0",
+    "mongoose": "^5.13.23",
+    "morgan": "^1.10.0",
+    "pug": "^3.0.0",
+    "sequelize": "^6.37.7",
+    "serve-favicon": "^2.5.0",
+    "sqlite3": "^5.1.7",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.13",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "gulp": "^3.9.1",
+    "gulp-nodemon": "^2.5.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-stylus": "^2.7.0",
+    "mocha": "^8.2.0",
+    "nodemon": "^3.1.10",
+    "supertest": "^3.4.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alicompu/express-mvc-starter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/alicompu/express-mvc-starter/issues"
+  },
+  "homepage": "https://github.com/alicompu/express-mvc-starter#readme"
+}
