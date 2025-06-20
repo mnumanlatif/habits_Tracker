@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-
 const habitSchema = new mongoose.Schema(
   {
     userId: {
@@ -30,14 +29,6 @@ const habitSchema = new mongoose.Schema(
     streak: {
       type: Number,
       default: 0,
-    },
-    completedDates: {
-      type: [Date], 
-      default: [],
-    },
-    isArchived: {
-      type: Boolean,
-      default: false,
     },
     priority: {
       type: String, 

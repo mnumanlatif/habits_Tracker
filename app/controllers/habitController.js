@@ -1,93 +1,47 @@
+// controllers/habitController.js
 import Habit from '../models/habitModel.js';
+import { habitValidationSchema } from '../validations/createValidation.js';
+import { updateHabitValidationSchema } from '../validations/updateValidation.js';
+import { handleValidation } from '../utils/validate.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 // Get all habits
-const getHabits = async (req, res) => {
-  try {
-    const habits = await Habit.find();
-    res.json(habits);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Database error' });
-  }
-};
+const getHabits = asyncHandler(async (req, res) => {
+  const habits = await Habit.find();
+  res.json(habits);
+});
 
 // Create a new habit
-const createHabit = async (req, res) => {
-  const {
-    userId,
-    name,
-    frequency,
-    description,
-    priority,
-    category,
-  } = req.body;
+const createHabit = asyncHandler(async (req, res) => {
+  const value = handleValidation(req.body, habitValidationSchema, res);
 
-  if (!userId) {
-    return res.status(400).json({ error: 'USER ID NOT FOUND' });
+  const existing = await Habit.findOne({ userId: value.userId });
+  if (existing) {
+    return res.status(409).json({ error: 'Habit for this user already exists' });
   }
 
-  try {
-    // Check if a habit already exists for this user
-    const existingHabit = await Habit.findOne({ userId });
-    if (existingHabit) {
-      return res.status(409).json({ error: 'Habit already exists for this user' });
-    }
-
-    const habit = new Habit({
-      userId,
-      name,
-      frequency,
-      description,
-      priority,
-      category,
-    });
-
-    await habit.save();
-    res.status(201).json({ message: 'Habit created', habit });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Database error' });
-  }
-};
-
+  const habit = new Habit(value);
+  await habit.save();
+  res.status(201).json({ message: 'Habit created', habit });
+});
 
 // Update a habit
-const updateHabit = async (req, res) => {
+const updateHabit = asyncHandler(async (req, res) => {
+  const value = handleValidation(req.body, updateHabitValidationSchema, res);
   const { id } = req.params;
-  const {
-    name,
-    frequency,
-    description,
-    priority,
-    category,
-    isArchived,
-  } = req.body;
 
-  try {
-    const habit = await Habit.findByIdAndUpdate(
-      id,
-      {
-        name,
-        frequency,
-        description,
-        priority,
-        category,
-        isArchived,
-        updatedAt: new Date(),
-      },
-      { new: true }
-    );
+  const habit = await Habit.findByIdAndUpdate(
+    id,
+    { ...value, updatedAt: new Date() },
+    { new: true }
+  );
 
-    if (!habit) {
-      return res.status(404).json({ error: 'Habit not found' });
-    }
-
-    res.status(200).json({ message: 'Habit updated', habit });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Database error' });
+  if (!habit) {
+    return res.status(404).json({ error: 'Habit not found' });
   }
-};
+
+  res.status(200).json({ message: 'Habit updated', habit });
+});
 
 export default {
   getHabits,
