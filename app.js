@@ -9,8 +9,8 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import debugLib from 'debug';
 import expressWinston from 'express-winston';
-import logger from './app/utils/logger.js';
-import { errorMiddleware } from './app/utils/errorHandler.js';
+import logger from './app/helpers/utils/logger.js';
+import { errorMiddleware } from './app/helpers/utils/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
