@@ -4,29 +4,32 @@ import { habitValidationSchema } from '../validations/createValidation.js';
 import { updateHabitValidationSchema } from '../validations/updateValidation.js';
 import { handleValidation } from '../utils/validate.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { AppError } from '../utils/errorHandler.js';
 
-// Get all habits
+
+// GET all habits
 const getHabits = asyncHandler(async (req, res) => {
   const habits = await Habit.find();
-  res.json(habits);
+  res.status(200).json(habits);
 });
 
-// Create a new habit
-const createHabit = asyncHandler(async (req, res) => {
+// CREATE a new habit
+const createHabit = asyncHandler(async (req, res, next) => {
   const value = handleValidation(req.body, habitValidationSchema, res);
 
   const existing = await Habit.findOne({ userId: value.userId });
   if (existing) {
-    return res.status(409).json({ error: 'Habit for this user already exists' });
+    return next(new AppError('Habit for this user already exists', 409));
   }
 
   const habit = new Habit(value);
   await habit.save();
+
   res.status(201).json({ message: 'Habit created', habit });
+  
 });
 
-// Update a habit
-const updateHabit = asyncHandler(async (req, res) => {
+const updateHabit = asyncHandler(async (req, res, next) => {
   const value = handleValidation(req.body, updateHabitValidationSchema, res);
   const { id } = req.params;
 
@@ -37,11 +40,12 @@ const updateHabit = asyncHandler(async (req, res) => {
   );
 
   if (!habit) {
-    return res.status(404).json({ error: 'Habit not found' });
+    return next(new AppError('Habit not found', 404));
   }
 
   res.status(200).json({ message: 'Habit updated', habit });
 });
+
 
 export default {
   getHabits,

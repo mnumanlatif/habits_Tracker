@@ -17,6 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "chalk": "^5.4.1",
     "cookie-parser": "^1.4.5",
     "debug": "^3.2.6",
     "dotenv": "^8.6.0",

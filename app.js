@@ -1,86 +1,61 @@
+// app.js
 import config from './config/config.js';
 import db from './config/db.js';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import favicon from 'serve-favicon';
-import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import debugLib from 'debug';
 import expressWinston from 'express-winston';
-import winston from 'winston';
+import logger from './app/utils/logger.js';
+import { errorMiddleware } from './app/utils/errorHandler.js';
 
-// ESM doesn't support __dirname by default
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const debug = debugLib('myapp:app');
 
-// ✅ Winston Logger instance
-const customLogger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: 'logs/app.log' }),
-  ],
-});
-
-// ✅ Request logger middleware
+// ✅ Request logger
 app.use(expressWinston.logger({
-  winstonInstance: customLogger,
+  winstonInstance: logger,
+  msg: "HTTP {{req.method}} {{req.url}} → {{res.statusCode}} in {{res.responseTime}}ms",
   meta: true,
-  msg: "HTTP {{req.method}} {{req.url}}",
-  expressFormat: true,
-  colorize: false,
 }));
 
-// view engine setup
-// app.set('views', path.join(__dirname, 'app/views'));
-// app.set('view engine', 'pug');
-
-app.use(logger(config.isProd ? 'combined' : 'dev'));
+// ✅ Middlewares
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(favicon(path.join(__dirname, 'public', 'favicon/favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// bootstrap routes
-// import webRoutes from './routes/web.js';
-// webRoutes(app);
+// ✅ Routes
 import apiRoutes from './routes/api.js';
 apiRoutes(app);
 
-// catch 404 and forward to error handler
+// ✅ 404 Handler (for unmatched routes)
 app.use((req, res, next) => {
   const err = new Error('Not Found');
-  err.status = 404;
+  err.statusCode = 404; // ✅ proper status code
   next(err);
 });
 
-// ✅ Error logger middleware
+// ✅ Error logging
 app.use(expressWinston.errorLogger({
-  winstonInstance: customLogger,
+  winstonInstance: logger,
 }));
 
-// error handler
-app.use((err, req, res, next) => {
-  res.locals.message = err.message;
-  res.locals.error = config.isDev ? err : {};
-  res.status(err.status || 500);
-  res.render('error');
-});
+// ✅ Custom error middleware (MUST be last)
+app.use(errorMiddleware);
 
+// ✅ DB and server start
 db.on('connected', () => {
   app.listen(config.server.port, config.server.hostname, () => {
-    console.log(`www.${config.server.hostname}:${config.server.port}`);
-    debug(`App listening on ${config.server.hostname} port: ${config.server.port}`);
+    console.log(`🌐 Server running at http://${config.server.hostname}:${config.server.port}`);
+    debug(`App listening on ${config.server.hostname}:${config.server.port}`);
     app.emit('appStarted');
   });
 });
