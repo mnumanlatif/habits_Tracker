@@ -36,10 +36,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 import apiRoutes from './routes/api.js';
 apiRoutes(app);
 
-// ✅ 404 Handler (for unmatched routes)
+
 app.use((req, res, next) => {
   const err = new Error('Not Found');
-  err.statusCode = 404; // ✅ proper status code
+  err.statusCode = 404; 
   next(err);
 });
 

@@ -2,9 +2,12 @@ import mongoose from 'mongoose';
 const habitSchema = new mongoose.Schema(
   {
     userId: {
-      type: String,
-      ref: 'User', 
-      unique: true,
+      type: mongoose.Schema.Types.ObjectId,
+       ref: 'User',
+    },
+    categoryId: {
+      type: mongoose.Schema.Types.ObjectId,
+       ref: 'Category',
     },
     name: {
       type: String,
@@ -34,10 +37,6 @@ const habitSchema = new mongoose.Schema(
       type: String, 
       enum: ['low', 'medium', 'high'],
       default: 'medium',
-    },
-    category: {
-      type: String, 
-      default: 'General',
     },
  
   },
