@@ -12,6 +12,7 @@ export default function(app) {
   app.get('/user',userController.getUsers);
   app.post('/user/create', userController.createUsers);
   app.put('/user/:id', userController.updateUsers);
+  app.delete('/user/delete/:id',userController.deleteUsers);
 //Category Route
   app.get('/category',categoryController.getCategories);
   app.post('/category/create', categoryController.createCategories);

@@ -62,9 +62,26 @@ const updateUsers = asyncHandler(async (req, res, next) => {
   res.status(200).json({ message: 'User Data updated', user });
 });
 
+const deleteUsers = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(new AppError('Invalid user ID format', 400));
+  }
+
+  const user = await User.findOneAndDelete({ _id: id }); // ✅ trigger the pre hook
+
+  if (!user) {
+    return next(new AppError('User not found', 404));
+  }
+
+  res.status(200).json({ message: 'User and related habits deleted successfully' });
+});
+
 
 export default {
   getUsers,
   createUsers,
   updateUsers,
+  deleteUsers,
 };

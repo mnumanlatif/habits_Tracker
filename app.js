@@ -50,7 +50,7 @@ app.use((err, req, res, next) => {
   res.status(status).json({
     success: false,
     message: err.message || 'Internal Server Error',
-    ...(config.isDev && { stack: err.stack })
+    // ...(config.isDev && { stack: err.stack })
   });
 });
 
