@@ -1,11 +1,22 @@
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
+import { AppError } from '../helpers/utils/errorHandler.js'; // If you're using a custom error handler
 
 export const protect = (req, res, next) => {
-  const token = req.headers['authorization'].split(' ')[1];
-  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+  const authHeader = req.headers['authorization'];
 
+  // Check if header is present
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return next(new AppError('Bearer token is required', 401));
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  // Verify token
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(403).json({ message: 'Token expired or invalid' });
+    if (err) {
+      return next(new AppError('Token expired or invalid', 403));
+    }
+
     req.user = decoded;
     next();
   });

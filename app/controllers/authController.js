@@ -30,11 +30,12 @@ export const login = async (req, res, next) => {
 
 export const refreshToken = (req, res) => {
   const token = req.cookies.refreshToken;
-  if (!token) return res.sendStatus(401);
+  if (!token) 
+    return next(new AppError ('no token found', 401));
 
   jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
     if (err) 
-        return res.sendStatus(403);
+    return next(new AppError(403));
     const newAccessToken = generateAccessToken({ _id: decoded.userId });
     res.cookie('accessToken', newAccessToken, {
       httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 15 * 60 * 1000
