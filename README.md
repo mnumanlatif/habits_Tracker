@@ -713,7 +713,7 @@ Occurs when trying to update a category that does not exist.
 ---
 
 
-## 📌 Notes
+## 🔖 Notes
 
 * **`categoryId`** is a UUID automatically generated on category creation.
 * **`categoryName`** must be unique and non-null.
