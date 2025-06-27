@@ -11,7 +11,7 @@ import debugLib from 'debug';
 import expressWinston from 'express-winston';
 import logger from './app/helpers/utils/logger.js';
 import { errorMiddleware } from './app/helpers/utils/errorHandler.js';
-
+import apiRoutes from './routes/api.js'
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -32,9 +32,7 @@ app.use(cookieParser());
 app.use(favicon(path.join(__dirname, 'public', 'favicon/favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ Routes
-import apiRoutes from './routes/api.js';
-apiRoutes(app);
+app.use('/api', apiRoutes); // Base path
 
 // ✅ 404 handler (for unknown routes)
 app.use((req, res, next) => {
