@@ -33,15 +33,23 @@ db.once('open', async () => {
       console.log('✅ Dropped unique index on habits.userId');
     }
 
-    // 🟢 Fix categoryId unique index in categories
     const categoriesCollection = mongoose.connection.db.collection('categories');
-    const categoriesIndexes = await categoriesCollection.indexes();
+const categoriesIndexes = await categoriesCollection.indexes();
 
-    const hasCategoryIdUnique = categoriesIndexes.some(i => i.name === 'categoryId_1' && i.unique);
-    if (hasCategoryIdUnique) {
-      await categoriesCollection.dropIndex('categoryId_1');
-      console.log('✅ Dropped unique index on categories.categoryId');
-    }
+// 🔥 Drop incorrect name_1 index if it exists
+const hasNameIndex = categoriesIndexes.some(i => i.name === 'name_1' && i.unique);
+if (hasNameIndex) {
+  await categoriesCollection.dropIndex('name_1');
+  console.log('✅ Dropped legacy unique index on name_1 (probably categoryName)');
+}
+
+const hasCatgoryNameTypo = categoriesIndexes.some(i => i.name === 'catgoryName_1' && i.unique);
+if (hasCatgoryNameTypo) {
+  await categoriesCollection.dropIndex('catgoryName_1');
+  console.log('❌ Dropped bad index on catgoryName (typo)');
+}
+
+
 
   } catch (err) {
     console.error('⚠️ Could not check/drop index:', err.message);

@@ -6,10 +6,10 @@ const categorySchema = new mongoose.Schema({
     type: String,
     default: () => uuidv4(),
   },
-  name: {
+  categoryName: {
     type: String,
     required: true,
-    unique: true,
+    // unique: true,
   },
   description: {
     type: String,
