@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { AppError } from '../helpers/utils/errorHandler.js'; // If you're using a custom error handler
+import { AppError } from '../utils/errorHandler.js'; // If you're using a custom error handler
 
 export const protect = (req, res, next) => {
   const authHeader = req.headers['authorization'];

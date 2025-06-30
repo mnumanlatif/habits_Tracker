@@ -1,83 +1,38 @@
-// controllers/habitController.js
-import User from '../models/userModel.js';
 import { userValidationSchema } from '../validations/createUserValidation.js';
 import { updateUserValidationSchema } from '../validations/updateUserValidation.js';
-import { handleValidation } from '../helpers/utils/validate.js';
-import asyncHandler from '../helpers/utils/asyncHandler.js';
-import { AppError } from '../helpers/utils/errorHandler.js';
-import mongoose from 'mongoose';
+import { handleValidation } from '../utils/validate.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
-// GET all users
+import {
+  getAllUsers,
+  checkUserExists,
+  createUser,
+  updateUserById,
+  deleteUserById
+} from '../services/userService.js';
+
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find();
+  const users = await getAllUsers();
   res.status(200).json(users);
 });
 
-const createUsers = asyncHandler(async (req, res, next) => {
+const createUsers = asyncHandler(async (req, res) => {
   const value = handleValidation(req.body, userValidationSchema);
-
-  try {
-    const existingUser = await User.findOne({
-      $or: [
-        { userName: value.userName },
-        { email: value.email },
-      ]
-    });
-
-    if (existingUser) {
-      return next(new AppError('Username or email already exists', 409));
-    }
-
-    const user = new User(value);
-    await user.save();
-
-    res.status(201).json({ message: 'User created', user });
-
-  } catch (err) {
-    return next(err);
-  }
+  await checkUserExists(value.userName, value.email);
+  const user = await createUser(value);
+  res.status(201).json({ message: 'User created', user });
 });
 
-
-const updateUsers = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-
-  // Check for valid MongoDB ObjectId
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return next(new AppError('Invalid user ID format', 400));
-  }
-
-  const value = handleValidation(req.body, updateUserValidationSchema, res, next);
-
-  const user = await User.findByIdAndUpdate(
-    id,
-    { ...value, updatedAt: new Date() },
-    { new: true }
-  );
-
-  if (!user) {
-    return next(new AppError('User not found', 404));
-  }
-
-  res.status(200).json({ message: 'User Data updated', user });
+const updateUsers = asyncHandler(async (req, res) => {
+  const value = handleValidation(req.body, updateUserValidationSchema);
+  const updatedUser = await updateUserById(req.params.id, value);
+  res.status(200).json({ message: 'User Data updated', user: updatedUser });
 });
 
-const deleteUsers = asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return next(new AppError('Invalid user ID format', 400));
-  }
-
-  const user = await User.findOneAndDelete({ _id: id }); // ✅ trigger the pre hook
-
-  if (!user) {
-    return next(new AppError('User not found', 404));
-  }
-
+const deleteUsers = asyncHandler(async (req, res) => {
+  await deleteUserById(req.params.id);
   res.status(200).json({ message: 'User and related habits deleted successfully' });
 });
-
 
 export default {
   getUsers,

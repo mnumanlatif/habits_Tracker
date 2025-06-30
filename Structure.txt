@@ -1,0 +1,36 @@
+app/
+├── controllers/
+│   ├── authController.js
+│   ├── habitController.js
+│   ├── categoryController.js
+│   └── userController.js
+├── services/
+│   ├── authService.js
+│   ├── habitService.js
+│   ├── categoryService.js
+│   └── userService.js
+├── utils/
+│   ├── asyncHandler.js
+│   ├── errorHandler.js
+│   ├── generateTokens.js
+│   ├── logger.js
+│   └── validate.js
+├── middleware/     
+│   ├── authMiddleware.js
+├── models/  
+│	├── categoryModel.js
+│	├── userModel.js   
+│	└── habitModel.js
+├── validations/
+│   ├── createUserValidation.js
+│   ├── updateUserValidation.js
+│   ├── createHabitValidation.js
+│   ├── updateHabitValidation.js
+│   └── createCategoryValidation.js
+routes/     
+│   ├── api.js
+│   ├── authRoutes.js
+│   ├── habitRoutes.js
+│   ├── categoryRoutes.js
+│   └── userRoutes.js
+app.js
