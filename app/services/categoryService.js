@@ -13,6 +13,7 @@ export const isCategoryDuplicate = async ({ categoryName, categoryId }) => {
 export const createCategory = async (data) => {
   const newCategory = new Category(data);
   return await newCategory.save();
+  
 };
 
 export const updateCategoryById = async (id, updateData) => {

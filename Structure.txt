@@ -33,4 +33,8 @@ routes/
 │   ├── habitRoutes.js
 │   ├── categoryRoutes.js
 │   └── userRoutes.js
+config/     
+│   ├── config.js
+│   ├── db.js
+.env
 app.js

@@ -1,6 +1,7 @@
+import mongoose from 'mongoose';
+
 import User from '../models/userModel.js';
 import { AppError } from '../utils/errorHandler.js';
-import mongoose from 'mongoose';
 
 export const getAllUsers = async () => {
   return await User.find();

@@ -2,6 +2,7 @@
 process.env.NODE_ENV = 'test';
 
 const app = require('../app');
+
 const request = require('supertest')(app);
 
 describe('Example unit test', () => {

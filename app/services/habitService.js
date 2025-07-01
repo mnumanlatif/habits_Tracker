@@ -1,8 +1,9 @@
+import mongoose from 'mongoose';
+
 import Habit from '../models/habitModel.js';
 import User from '../models/userModel.js';
 import Category from '../models/categoryModel.js';
 import { AppError } from '../utils/errorHandler.js';
-import mongoose from 'mongoose';
 
 export const findAllHabits = async () => {
   return await Habit.find();

@@ -1,17 +1,19 @@
 // app.js
-import config from './config/config.js';
-import db from './config/db.js';
-import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+import express from 'express';
 import favicon from 'serve-favicon';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import debugLib from 'debug';
 import expressWinston from 'express-winston';
+
+import db from './config/db.js';
+import config from './config/config.js';
 import logger from './app/utils/logger.js';
 import { errorMiddleware } from './app/utils/errorHandler.js';
-import apiRoutes from './routes/api.js'
+import apiRoutes from './routes/api.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -21,7 +23,7 @@ const debug = debugLib('myapp:app');
 // ✅ Request logging
 app.use(expressWinston.logger({
   winstonInstance: logger,
-  msg: "HTTP {{req.method}} {{req.url}} → {{res.statusCode}} in {{res.responseTime}}ms",
+  msg: 'HTTP {{req.method}} {{req.url}} → {{res.statusCode}} in {{res.responseTime}}ms',
   meta: true,
 }));
 
@@ -42,7 +44,7 @@ app.use((req, res, next) => {
 });
 
 // ✅ Main error handler (returns JSON)
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   const status = err.statusCode || err.status || 500;
 
   res.status(status).json({

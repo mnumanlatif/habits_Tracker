@@ -1,4 +1,5 @@
 import express from 'express';
+
 import habitController from '../app/controllers/habitController.js';
 import { protect } from '../app/middleware/authMiddleware.js';
 

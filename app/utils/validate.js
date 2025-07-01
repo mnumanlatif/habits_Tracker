@@ -1,4 +1,4 @@
-import { AppError } from "./errorHandler.js";
+import { AppError } from './errorHandler.js';
 
 export const handleValidation = (data, schema) => {
   const { error, value } = schema.validate(data);

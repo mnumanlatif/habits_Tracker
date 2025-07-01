@@ -1,10 +1,10 @@
+import mongoose from 'mongoose';
+
 import { categoryValidationSchema } from '../validations/createCategoryValidation.js';
 import { updateCategoryValidationSchema } from '../validations/updateCategoryValidation.js';
 import { handleValidation } from '../utils/validate.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { AppError } from '../utils/errorHandler.js';
-import mongoose from 'mongoose';
-
 import {
   getAllCategories,
   isCategoryDuplicate,

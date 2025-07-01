@@ -2,7 +2,6 @@ import { habitValidationSchema } from '../validations/createHabitValidation.js';
 import { updateHabitValidationSchema } from '../validations/updateHabitValidation.js';
 import { handleValidation } from '../utils/validate.js';
 import asyncHandler from '../utils/asyncHandler.js';
-
 import {
   findAllHabits,
   findHabitsByUser,

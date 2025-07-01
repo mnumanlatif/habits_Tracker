@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import debugLib from 'debug';
+
 import config from './config.js';
 
 const debug = debugLib('myapp:db');

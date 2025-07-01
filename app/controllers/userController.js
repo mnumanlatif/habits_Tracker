@@ -2,7 +2,6 @@ import { userValidationSchema } from '../validations/createUserValidation.js';
 import { updateUserValidationSchema } from '../validations/updateUserValidation.js';
 import { handleValidation } from '../utils/validate.js';
 import asyncHandler from '../utils/asyncHandler.js';
-
 import {
   getAllUsers,
   checkUserExists,
