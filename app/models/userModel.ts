@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Habit from './habitModel.js'; 
 
 export interface IUser extends Document {
-  _id: Types.ObjectId;
+  _id?: String;
   userId: string;
   name: string;
   userName: string;

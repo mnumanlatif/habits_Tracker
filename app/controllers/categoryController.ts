@@ -12,7 +12,7 @@ import {
   updateCategoryById,
 } from '../services/categoryService.js';
 
-const getCategories = asyncHandler(async (req: Request, res: Response) => {
+const getCategories = asyncHandler(async (_req: Request, res: Response) => {
   const categories = await getAllCategories();
   res.status(200).json(categories);
 });

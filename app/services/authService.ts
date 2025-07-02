@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-import User, { IUser } from '../models/userModel.js'; // Assuming IUser is your User interface
+import User from '../models/userModel.js'; 
 import { generateAccessToken, generateRefreshToken } from '../utils/generateTokens.js';
 import { AppError } from '../utils/errorHandler.js';
 
@@ -19,8 +19,11 @@ export const authenticateUser = async (
     throw new AppError('Invalid Credentials', 401);
   }
 
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
+  if (!user._id || typeof user._id !== 'string') {
+    throw new AppError('User ID is invalid', 500);
+  }
+  const accessToken = generateAccessToken({ _id: user._id });
+  const refreshToken = generateRefreshToken({ _id: user._id });
 
   return { accessToken, refreshToken };
 };

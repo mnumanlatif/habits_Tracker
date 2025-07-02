@@ -19,13 +19,13 @@ const getHabitsAll = asyncHandler(async (req: Request, res: Response) => {
 
 const getHabitsByUser = asyncHandler(async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const habits = await findHabitsByUser(userId);
+  const habits = await findHabitsByUser({ userId });
   res.status(200).json(habits);
 });
 
 const getHabitsByCategory = asyncHandler(async (req: Request, res: Response) => {
   const { categoryId } = req.params;
-  const habits = await findHabitsByCategory(categoryId);
+  const habits = await findHabitsByCategory({ categoryId });
   res.status(200).json(habits);
 });
 
