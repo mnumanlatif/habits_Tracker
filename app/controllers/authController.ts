@@ -1,7 +1,8 @@
 import { authenticateUser, refreshAccessToken } from '../services/authService.js';
 // import { AppError } from '../utils/errorHandler.js';
+import { Response, Request, NextFunction } from 'express';
 
-export const login = async (req, res, next) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
     const { accessToken, refreshToken } = await authenticateUser(email, password);
@@ -9,7 +10,7 @@ export const login = async (req, res, next) => {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'Strict',
+      sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -19,17 +20,18 @@ export const login = async (req, res, next) => {
   }
 };
 
-export const refreshToken = async (req, res, next) => {
+export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.cookies.refreshToken;
     const newAccessToken = await refreshAccessToken(token);
 
-    res.cookie('accessToken', newAccessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'Strict',
-      maxAge: 15 * 60 * 1000
-    });
+    res.cookie('accessToken', newAccessToken as string, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 15 * 60 * 1000
+});
+
 
     res.json({ message: 'Token refreshed' });
   } catch (err) {
@@ -37,7 +39,7 @@ export const refreshToken = async (req, res, next) => {
   }
 };
 
-export const logout = (req, res) => {
+export const logout = (req: Request, res: Response) => {
   res.clearCookie('accessToken');
   res.clearCookie('refreshToken');
   res.json({ message: 'Logged out' });

@@ -3,11 +3,22 @@ import mongoose from 'mongoose';
 import User from '../models/userModel.js';
 import { AppError } from '../utils/errorHandler.js';
 
+interface UserData {
+  userName: string;
+  email: string;
+  // other fields if needed
+}
+
+interface UserCheckData {
+  userName: string;
+  email: string;
+}
+
 export const getAllUsers = async () => {
   return await User.find();
 };
 
-export const checkUserExists = async (userName, email) => {
+export const checkUserExists = async ({ userName, email }: UserCheckData) => {
   const existingUser = await User.findOne({
     $or: [{ userName }, { email }]
   });
@@ -16,13 +27,13 @@ export const checkUserExists = async (userName, email) => {
   }
 };
 
-export const createUser = async (userData) => {
+export const createUser = async (userData: UserData) => {
   const user = new User(userData);
   return await user.save();
 };
 
-export const updateUserById = async (id, updateData) => {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+export const updateUserById = async (id: string, updateData: Partial<UserData>) => {
+  if (!mongoose.isValidObjectId(id)) {
     throw new AppError('Invalid user ID format', 400);
   }
 
@@ -39,8 +50,8 @@ export const updateUserById = async (id, updateData) => {
   return updated;
 };
 
-export const deleteUserById = async (id) => {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+export const deleteUserById = async (id: string) => {
+  if (!mongoose.isValidObjectId(id)) {
     throw new AppError('Invalid user ID format', 400);
   }
 

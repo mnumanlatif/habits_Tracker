@@ -1,19 +1,19 @@
 // app.js
 import path from 'path';
 import { fileURLToPath } from 'url';
-
 import express from 'express';
 import favicon from 'serve-favicon';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import debugLib from 'debug';
 import expressWinston from 'express-winston';
-
-import db from './config/db.js';
+import db, { connectToDB } from './config/db.js';
 import config from './config/config.js';
 import logger from './app/utils/logger.js';
 import { errorMiddleware } from './app/utils/errorHandler.js';
 import apiRoutes from './routes/api.js';
+import { Response, Request, NextFunction } from 'express';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -37,22 +37,30 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', apiRoutes); // Base path
 
 // ✅ 404 handler (for unknown routes)
-app.use((req, res, next) => {
-  const error = new Error('Not Found');
+interface CustomError extends Error {
+  statusCode?: number;
+  status?: number;
+}
+
+app.use(
+  (_err: Error,_req: Request, _res: Response, next: NextFunction) => {
+  const error = new Error('Not Found') as CustomError;
   error.statusCode = 404;
   next(error);
 });
 
-// ✅ Main error handler (returns JSON)
-app.use((err, req, res) => {
-  const status = err.statusCode || err.status || 500;
 
-  res.status(status).json({
-    success: false,
-    message: err.message || 'Internal Server Error',
-    // ...(config.isDev && { stack: err.stack })
-  });
-});
+// ✅ Main error handler (returns JSON)
+app.use(
+  (err: CustomError, _req: Request, res: Response, _next: NextFunction) => {
+    const status = err.statusCode || 500;
+    res.status(status).json({
+      success: false,
+      message: err.message || 'Internal Server Error',
+    });
+  }
+);
+
 
 // ✅ Error logging
 app.use(expressWinston.errorLogger({
@@ -63,10 +71,11 @@ app.use(expressWinston.errorLogger({
 app.use(errorMiddleware);
 
 // ✅ DB and server start
-db.on('connected', () => {
-  app.listen(config.server.port, config.server.hostname, () => {
-    console.log(`🌐 Server running at http://${config.server.hostname}:${config.server.port}`);
-    debug(`App listening on ${config.server.hostname}:${config.server.port}`);
+connectToDB().then(() => {
+  const port = Number(config.server.port) || 3000;
+  app.listen(port, config.server.hostname, () => {
+    console.log(`🌐 Server running at http://${config.server.hostname}:${port}`);
+    debug(`App listening on ${config.server.hostname}:${port}`);
     app.emit('appStarted');
   });
 });

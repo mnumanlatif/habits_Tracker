@@ -1,8 +1,20 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 
 import Habit from './habitModel.js'; 
+
+export interface IUser extends Document {
+  _id: Types.ObjectId;
+  userId: string;
+  name: string;
+  userName: string;
+  password: string;
+  email: string;
+  age: number;
+  department?: string;
+}
+
 
 const userSchema = new mongoose.Schema(
   {
@@ -23,7 +35,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // ✅ Hash password before saving
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function (this: IUser, next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 12);
   next();
@@ -36,5 +48,5 @@ userSchema.pre('findOneAndDelete', async function (next) {
   next();
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model<IUser>('User', userSchema);
 export default User;

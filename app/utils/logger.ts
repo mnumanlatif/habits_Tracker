@@ -12,10 +12,12 @@ const levelColors = {
 };
 
 const consoleFormat = printf(({ level, message, timestamp, ...meta }) => {
-  const color = levelColors[level] || levelColors.default;
+  const color = levelColors[level as keyof typeof levelColors] || levelColors.default;
   const metaData = Object.keys(meta).length ? JSON.stringify(meta) : '';
   return color(`[${timestamp}] ${level.toUpperCase()}: ${message} ${metaData}`);
 });
+
+
 
 
 const fileFormat = combine(

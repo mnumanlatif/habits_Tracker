@@ -5,11 +5,17 @@ import User from '../models/userModel.js';
 import Category from '../models/categoryModel.js';
 import { AppError } from '../utils/errorHandler.js';
 
+interface HabitData {
+  userId: string;
+  categoryId: string;
+  // other fields as needed
+}
+
 export const findAllHabits = async () => {
   return await Habit.find();
 };
 
-export const findHabitsByUser = async (userId) => {
+export const findHabitsByUser = async ({ userId }: { userId: string }) => {
   const habits = await Habit.find({ userId });
   if (!habits || habits.length === 0) {
     throw new AppError('No habits found for this user', 404);
@@ -17,7 +23,7 @@ export const findHabitsByUser = async (userId) => {
   return habits;
 };
 
-export const findHabitsByCategory = async (categoryId) => {
+export const findHabitsByCategory = async ({ categoryId }: { categoryId: string }) => {
   const habits = await Habit.find({ categoryId });
   if (!habits || habits.length === 0) {
     throw new AppError('No habits found for this category', 404);
@@ -25,22 +31,19 @@ export const findHabitsByCategory = async (categoryId) => {
   return habits;
 };
 
-export const createHabit = async (data) => {
-  // Validate MongoDB ObjectIds
-  if (!mongoose.Types.ObjectId.isValid(data.userId)) {
+export const createHabit = async (data: HabitData) => {
+  if (!mongoose.Types.ObjectId(data.userId)) {
     throw new AppError('Invalid user ID format', 400);
   }
-  if (!mongoose.Types.ObjectId.isValid(data.categoryId)) {
+  if (!mongoose.Types.ObjectId(data.categoryId)) {
     throw new AppError('Invalid category ID format', 400);
   }
 
-  // Check if user exists
   const userExists = await User.exists({ _id: data.userId });
   if (!userExists) {
     throw new AppError('User does not exist', 404);
   }
 
-  // Check if category exists
   const categoryExists = await Category.exists({ _id: data.categoryId });
   if (!categoryExists) {
     throw new AppError('Category does not exist', 404);
@@ -49,16 +52,21 @@ export const createHabit = async (data) => {
   try {
     const habit = new Habit(data);
     return await habit.save();
-  } catch (err) {
-    if (err.code === 11000) {
-      const field = Object.keys(err.keyValue)[0];
+  } catch (err: unknown) {
+    if (
+      typeof err === 'object' &&
+      err !== null &&
+      'code' in err &&
+      (err as any).code === 11000
+    ) {
+      const field = Object.keys((err as any).keyValue)[0];
       throw new AppError(`Duplicate value for ${field}`, 409);
     }
     throw err;
   }
 };
 
-export const updateHabitById = async (id, data) => {
+export const updateHabitById = async (id: string, data: Partial<HabitData>) => {
   const updated = await Habit.findByIdAndUpdate(
     id,
     { ...data, updatedAt: new Date() },
@@ -69,3 +77,10 @@ export const updateHabitById = async (id, data) => {
   }
   return updated;
 };
+// export const deleteHabitById = async (id: string) => {
+//   const deleted = await Habit.findByIdAndDelete(id);
+//   if (!deleted) {
+//     throw new AppError('Habit not found', 404);
+//   }
+//   return deleted;
+// };

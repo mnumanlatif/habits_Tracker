@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+import { Response, Request, NextFunction } from 'express';
 import { categoryValidationSchema } from '../validations/createCategoryValidation.js';
 import { updateCategoryValidationSchema } from '../validations/updateCategoryValidation.js';
 import { handleValidation } from '../utils/validate.js';
@@ -12,12 +12,12 @@ import {
   updateCategoryById,
 } from '../services/categoryService.js';
 
-const getCategories = asyncHandler(async (req, res) => {
+const getCategories = asyncHandler(async (req: Request, res: Response) => {
   const categories = await getAllCategories();
   res.status(200).json(categories);
 });
 
-const createCategories = asyncHandler(async (req, res, next) => {
+const createCategories = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const value = handleValidation(req.body, categoryValidationSchema);
 
   const duplicate = await isCategoryDuplicate(value);
@@ -29,14 +29,14 @@ const createCategories = asyncHandler(async (req, res, next) => {
   res.status(201).json({ message: 'Category created', category });
 });
 
-const updateCategories = asyncHandler(async (req, res, next) => {
+const updateCategories = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId(id)) {
     return next(new AppError('Invalid category ID format', 400));
   }
 
-  const value = handleValidation(req.body, updateCategoryValidationSchema, res, next);
+  const value = handleValidation(req.body, updateCategoryValidationSchema);
 
   const updatedCategory = await updateCategoryById(id, value);
   res.status(200).json({ message: 'Category Data updated', category: updatedCategory });

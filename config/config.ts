@@ -1,11 +1,25 @@
 import dotenv from 'dotenv';
-dotenv.config(); 
-
-const env = process.env.NODE_ENV || 'development';
+dotenv.config();
 
 const isUsingLocalDb = process.env.USE_LOCAL_DB === 'true';
 
-const config = {
+type Env = 'development' | 'production';
+
+interface ConfigSchema {
+  server: {
+    port: string | number;
+    hostname: string;
+  };
+  database: {
+    url?: string;
+  };
+  isDev?: boolean;
+  isProd?: boolean;
+}
+
+const env = (process.env.NODE_ENV || 'development') as Env;
+
+const config: Record<Env, ConfigSchema> = {
   development: {
     server: {
       port: process.env.PORT || 3000,
@@ -28,10 +42,15 @@ const config = {
   },
 };
 
-config[env].isDev = env === 'development';
-config[env].isProd = env === 'production';
+// Now add isDev and isProd with type safety
+config[env] = {
+  ...config[env],
+  isDev: env === 'development',
+  isProd: env === 'production',
+};
+
 console.log('[DEBUG] USE_LOCAL_DB:', process.env.USE_LOCAL_DB);
 console.log('[DEBUG] DB_LOCAL_URL:', process.env.DB_LOCAL_URL);
-
-
+console.log('[DEBUG]PORT:',process.env.PORT);
+console.log('[DEBUG]LOCAL_HOST:',process.env.HOSTNAME)
 export default config[env];
