@@ -18,6 +18,8 @@ jest.mock('../app/models/userModel.js', () => ({
 
 import * as userService from '../app/services/userService.js';
 import User, { IUser } from '../app/models/userModel.js';
+import { handleValidation } from '../app/utils/validate.js';
+import { userValidationSchema } from '../app/validations/createUserValidation.js';
 
 describe('User Controller', () => {
   beforeEach(() => {
@@ -46,6 +48,7 @@ describe('User Controller', () => {
       expect(mockSave).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockCreatedUser);
     }); 
+
     it('should throw an error if user already exists', async () => {
       const mockUserInput = {
         userName: "nomimian02",
@@ -57,6 +60,19 @@ describe('User Controller', () => {
         $or: [{ userName: mockUserInput.userName }, { email: mockUserInput.email }]
       });
     });
+    
+    it('should throw an error if any input field is missing', async ()=>{
+      const mockUserInput = {
+        name: "Numan",
+        password: "nomimian01",
+        email: "nomimian02@gmail.com",
+        age: 25,
+        department: "IT"
+      }
+      expect(() => handleValidation(mockUserInput, userValidationSchema))
+    .toThrow('\"userName\" is required'); 
+    })
+  
   });
 
   describe('GET /user', () => {

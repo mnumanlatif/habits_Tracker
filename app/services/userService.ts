@@ -4,8 +4,12 @@ import User from '../models/userModel.js';
 import { AppError } from '../utils/errorHandler.js';
 
 interface UserData {
+  name: string;
   userName: string;
+  password: string;
   email: string;
+  age: number;
+  department?: string;
   // other fields if needed
 }
 
