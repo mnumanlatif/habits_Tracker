@@ -16,6 +16,7 @@ jest.mock('../app/models/userModel.js', () => ({
   default: UserMock,
 }));
 
+
 import * as userService from '../app/services/userService.js';
 import User, { IUser } from '../app/models/userModel.js';
 import { handleValidation } from '../app/utils/validate.js';
@@ -89,6 +90,14 @@ describe('User Controller', () => {
       expect(User.find).toHaveBeenCalledTimes(1);
       expect(result).toEqual(mockUsers);
     });
+    it('should return an empty array if no users exist', async () => {
+      (User.find as jest.Mock).mockResolvedValue([]);
+
+      const result = await userService.getAllUsers();
+
+      expect(User.find).toHaveBeenCalledTimes(1);
+      expect(result).toEqual([]);
+    });
   });
 
 
@@ -111,6 +120,28 @@ describe('PUT /user/:id', () => {
     );
     expect(result).toEqual(mockUpdatedUser);
   });
+
+  it('should throw an error if user ID format is invalid', async () => {
+    const mockUserId = '12345678901234567890123456'; 
+    const mockUpdateData: Partial<IUser> = { name: 'Usman Updated', age: 26 };  
+    await expect(userService.updateUserById(mockUserId, mockUpdateData))
+      .rejects.toThrow('Invalid user ID format');
+    expect(User.findByIdAndUpdate).not.toHaveBeenCalled();
+  });
+
+  it('should throw an error if user is not found', async () => {
+    const mockUserId = '507f191e810c19729de860ea';
+    const mockUpdateData: Partial<IUser> = { name: 'Usman Updated', age: 26 };    
+    (User.findByIdAndUpdate as jest.Mock).mockResolvedValue(null);
+    await expect(userService.updateUserById(mockUserId, mockUpdateData))
+      .rejects.toThrow('User not found');
+    expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
+      mockUserId,
+      { ...mockUpdateData, updatedAt: expect.any(Date) },
+      { new: true }
+    );
+  });
+
 });
 
 describe('DELETE /user/:id', () => {
@@ -134,5 +165,19 @@ describe('DELETE /user/:id', () => {
     expect(User.findOneAndDelete).toHaveBeenCalledWith({_id: mockUserId});
     expect(result).toEqual(mockDeletedUser);
   });
+  it('should throw an error if user ID format is invalid', async () => {
+    const mockUserId = '12345678901234567890123456';
+    await expect(userService.deleteUserById(mockUserId))    
+      .rejects.toThrow('Invalid user ID format'); 
+    expect(User.findOneAndDelete).not.toHaveBeenCalled();
+  });
+  it('should throw an error if user is not found', async () => {
+    const mockUserId = '517f191e810c19729de860ea';
+    (User.findOneAndDelete as jest.Mock).mockResolvedValue(null); 
+    await expect(userService.deleteUserById(mockUserId))
+      .rejects.toThrow('User not found');
+    expect(User.findOneAndDelete).toHaveBeenCalledWith({ _id: mockUserId });
+  }
+  );
 });
 });
