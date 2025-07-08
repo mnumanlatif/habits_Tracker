@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DB_LOCAL_URL")
+}
+
+model categories {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  v            Int      @map("__v")
+  categoryId   String
+  categoryName String
+  createdAt    DateTime @db.Date
+  description  String
+}
+
+model habits {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  v           Int      @map("__v")
+  categoryId  String   @db.ObjectId
+  createdAt   DateTime @db.Date
+  description String
+  frequency   String
+  name        String
+  priority    String
+  streak      Int
+  updatedAt   DateTime @db.Date
+  userId      String   @db.ObjectId
+}
+
+model users {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  v          Int      @map("__v")
+  age        Int
+  createdAt  DateTime @db.Date
+  department String
+  email      String   @unique(map: "email_1")
+  name       String
+  password   String
+  updatedAt  DateTime @db.Date
+  userId     String   @unique(map: "userId_1")
+  userName   String   @unique(map: "userName_1")
+}

@@ -20,7 +20,6 @@ export const connectToDB = async () => {
 
 const db = mongoose.connection;
 
-// 👇 This part stays the same
 db.on('error', () => {
   debug(`MongoDB connection error ${config.database.url} \nPlease make sure MongoDB is running.`);
   process.exit();
@@ -44,7 +43,6 @@ db.once('open', async () => {
     const categoriesCollection = mongoose.connection.db.collection('categories');
     const categoriesIndexes = await categoriesCollection.indexes();
 
-    // 🔥 Drop incorrect name_1 index if it exists
     const hasNameIndex = categoriesIndexes.some(i => i.name === 'name_1' && i.unique);
     if (hasNameIndex) {
       await categoriesCollection.dropIndex('name_1');

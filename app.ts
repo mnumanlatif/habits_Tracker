@@ -34,7 +34,7 @@ app.use(cookieParser());
 app.use(favicon(path.join(__dirname, 'public', 'favicon/favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api', apiRoutes); // Base path
+app.use('/api', apiRoutes); 
 
 // ✅ 404 handler (for unknown routes)
 interface CustomError extends Error {

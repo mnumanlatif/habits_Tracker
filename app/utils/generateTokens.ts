@@ -1,5 +1,6 @@
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
 
+type Expiry = Exclude<SignOptions['expiresIn'], number | undefined>
 interface User {
   _id: string;
 }
@@ -11,14 +12,13 @@ if (!JWT_SECRET || !REFRESH_TOKEN_SECRET) {
   throw new Error('JWT secrets are not set in environment variables');
 }
 
-// Cast to any to bypass strict union mismatch
-const ACCESS_EXPIRES_IN = (process.env.JWT_EXPIRES_IN || '15m') as any;
-const REFRESH_EXPIRES_IN = (process.env.REFRESH_TOKEN_EXPIRES_IN || '7d') as any;
+const ACCESS_EXPIRES_IN = (process.env.JWT_EXPIRES_IN || '15m') as Expiry;
+const REFRESH_EXPIRES_IN= (process.env.REFRESH_TOKEN_EXPIRES_IN || '7d') as Expiry;
 
 export const generateAccessToken = (user: User): string => {
   return jwt.sign(
     { userId: user._id },
-    JWT_SECRET,
+    JWT_SECRET ,
     { expiresIn: ACCESS_EXPIRES_IN }
   );
 };

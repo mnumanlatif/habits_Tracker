@@ -49,3 +49,5 @@ pids
 # Editors
 .idea
 *.iml
+
+/generated/prisma
