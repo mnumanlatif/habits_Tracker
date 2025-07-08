@@ -100,8 +100,6 @@ describe('User Controller', () => {
     });
   });
 
-
-
 describe('PUT /user/:id', () => {
   it('should update an existing user', async () => {
     const mockUserId = '507f191e810c19729de860ea'; 

@@ -32,10 +32,10 @@ export const findHabitsByCategory = async ({ categoryId }: { categoryId: string 
 };
 
 export const createHabit = async (data: HabitData) => {
-  if (!mongoose.Types.ObjectId(data.userId)) {
+  if (!mongoose.isValidObjectId(data.userId)) {
     throw new AppError('Invalid user ID format', 400);
   }
-  if (!mongoose.Types.ObjectId(data.categoryId)) {
+  if (!mongoose.isValidObjectId(data.categoryId)) {
     throw new AppError('Invalid category ID format', 400);
   }
 

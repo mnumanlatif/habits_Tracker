@@ -32,7 +32,7 @@ const createCategories = asyncHandler(async (req: Request, res: Response, next: 
 const updateCategories = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId(id)) {
+  if (!mongoose.isValidObjectId(id)) {
     return next(new AppError('Invalid category ID format', 400));
   }
 
